@@ -13,14 +13,15 @@ public class GUIFrame extends JFrame
 	private MyThread[] listOfThreads;
 	private JPanel container;
 	private int maxThreads = 8, totalThreads;
+	private boolean startNext;
+
 
 	public GUIFrame(int x, int y, int threads)
 	{
 
 		totalThreads = threads;
-		if(totalThreads>8)
-			System.exit(0);
 
+		startNext = false;
 
 		listOfThreads = new MyThread[maxThreads];	//initialize array, max 8 threads
 
@@ -49,14 +50,13 @@ public class GUIFrame extends JFrame
 		container = new JPanel();
 		//container.setLayout(new GridLayout(4,2,15,15));
 		container.setBackground(Color.darkGray);
-		container.setPreferredSize(new Dimension(650,600));
+		container.setPreferredSize(new Dimension(650,500));
 		Random rand = new Random();
 		for(int i =0; i< totalThreads; i++)
 		{
 				int r = rand.nextInt(255);
 				int g = rand.nextInt(255);
 				int b = rand.nextInt(255);
-				System.out.println(r +" "+g+" "+b);
 				Color randomColor = new Color(r, g, b);
 				listOfThreads[i] = new MyThread(i+1, randomColor);
 				container.add(listOfThreads[i].getGUI());
@@ -72,12 +72,13 @@ public class GUIFrame extends JFrame
 
 	public void startThreading()
 	{
-	//	if(x1!=null)
-	//		x1.stopped = true; //use method
-	//	if(x2!=null)
-	//		x2.stopped = true;
-	//	if(x3!=null)
-  //	x3.stopped = true;
+		if(startNext)
+		{
+			GUIFrame g1 = new GUIFrame(650,650,totalThreads);
+			g1.setVisible(true);
+			this.dispose();
+			return;
+		}
 
 		for(int i =0; i< totalThreads; i++)
 		{
@@ -88,6 +89,8 @@ public class GUIFrame extends JFrame
 		{
 			listOfThreads[i].start();
 		}
+
+		startNext = true;
 
 
 	}
