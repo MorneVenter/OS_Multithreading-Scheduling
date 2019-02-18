@@ -15,7 +15,7 @@ class MyThread extends Thread
 	private JSlider slider1;
   private int myNumber;
   private Color myBarColor;
-
+  private JLabel caption1;
 
   public MyThread(int myNum, Color myCol)
   {
@@ -40,7 +40,7 @@ class MyThread extends Thread
 		bar1.setForeground(myBarColor);
 		bar1.setString("0%");
 
-		JLabel caption1 = new JLabel("Thread "+myNumber+":");
+		caption1 = new JLabel("Thread "+myNumber+":");
 		caption1.setForeground(Color.white);
 		slider1 = new JSlider(JSlider.HORIZONTAL,50, 1000, 100);
 		slider1.setMajorTickSpacing(150);
@@ -78,9 +78,12 @@ class MyThread extends Thread
         int count = 1;
         while(count<=100 && !stopped)
         {
+
+
           bar1.setValue(count);
           bar1.setString(count+"%");
           count++;
+          caption1.setForeground(Color.red);
           try
           {
             Thread.sleep(delay);
@@ -92,6 +95,8 @@ class MyThread extends Thread
             bar1.setString("DONE!");
             stopped =true;
           }
+
+          caption1.setForeground(Color.white);
         }
     }
   }

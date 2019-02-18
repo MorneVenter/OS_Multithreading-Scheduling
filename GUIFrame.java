@@ -11,10 +11,10 @@ public class GUIFrame extends JFrame
 
 	private JButton threatButton;
 	private MyThread[] listOfThreads;
-	private JPanel container;
+	private JPanel container, selectionPanel;
 	private int maxThreads = 8, totalThreads;
 	private boolean startNext;
-
+	private JComboBox selectScheduler;
 
 	public GUIFrame(int x, int y, int threads)
 	{
@@ -43,12 +43,11 @@ public class GUIFrame extends JFrame
         startThreading();
     } });
 		threatButton.setText("Start Threading");
-		threatButton.setBackground(Color.gray);
+		threatButton.setBackground(Color.white);
 		threatButton.setPreferredSize(new Dimension(250,40));
 
 
 		container = new JPanel();
-		//container.setLayout(new GridLayout(4,2,15,15));
 		container.setBackground(Color.darkGray);
 		container.setPreferredSize(new Dimension(650,500));
 		Random rand = new Random();
@@ -63,6 +62,17 @@ public class GUIFrame extends JFrame
 		}
 
 
+		String[] schedulerString = {"First-come-first-serve","Shortest Job First","Shortest Time Remaining","Round Robin","Priority","Multiple Queues"};
+		selectScheduler = new JComboBox(schedulerString);
+		selectScheduler.setSelectedIndex(0);
+		selectionPanel = new JPanel();
+		selectionPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+		selectionPanel.setBackground(Color.darkGray);
+		selectionPanel.setPreferredSize(new Dimension(650,40));
+		selectionPanel.add(selectScheduler);
+
+
+		add(selectionPanel);
 		add(container);
 		add(threatButton);
 
