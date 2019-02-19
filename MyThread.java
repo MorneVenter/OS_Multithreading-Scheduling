@@ -42,7 +42,7 @@ class MyThread extends Thread
 
 		caption1 = new JLabel("Thread "+myNumber+":");
 		caption1.setForeground(Color.white);
-		slider1 = new JSlider(JSlider.HORIZONTAL,50, 1000, 100);
+		slider1 = new JSlider(JSlider.HORIZONTAL,1, 500, 5);
 		slider1.setMajorTickSpacing(150);
 		slider1.setMinorTickSpacing(50);
 		slider1.setPaintTicks(true);
@@ -70,6 +70,17 @@ class MyThread extends Thread
   {
     stopped = true;
   }
+
+  public boolean hasStopped()
+  {
+    return stopped;
+  }
+
+  public void resumeThread()
+  {
+      stopped = false;
+  }
+
 
   public void run()
   {

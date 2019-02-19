@@ -95,15 +95,61 @@ public class GUIFrame extends JFrame
 			listOfThreads[i].setDelay();
 		}
 
-		for(int i =0; i< totalThreads; i++)
-		{
-			listOfThreads[i].start();
-		}
-
 		startNext = true;
-
+		MyScheduler s1 = new MyScheduler(selectScheduler.getSelectedIndex(), listOfThreads, totalThreads);
+		s1.start();
 
 	}
+
+public class MyScheduler extends Thread
+{
+			private MyThread[] theseThreads;
+			private int activeThread=0;
+			private int totalThreads;
+			private boolean isDone = false;
+			private int x;
+
+
+			public MyScheduler(int y, MyThread[] tt, int numThreads)
+			{
+				x = y;
+				theseThreads = tt;
+				totalThreads = numThreads;
+
+			}
+
+			public void firstComefirstServe()
+			{
+				if(!theseThreads[activeThread].hasStopped())
+				{
+					if(!theseThreads[activeThread].isAlive())
+							theseThreads[activeThread].start();
+				}
+				else
+				{
+					activeThread++;
+					if(activeThread>totalThreads-1)
+						isDone=true;
+				}
+			}
+
+			public void run()
+			{
+				while(!isDone)
+				{
+					try
+          {
+            Thread.sleep(15);
+          }
+          catch(Exception e){}
+
+					if(x==0)
+					firstComefirstServe();
+
+
+				}
+			}
+}
 
 
 
