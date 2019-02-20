@@ -108,8 +108,9 @@ public class MyScheduler extends Thread
 			private int totalThreads;
 			private boolean isDone = false;
 			private int x; 										//selected choice
-			private boolean sorted = false;
 			private boolean hasStartedAll = false;
+			private int SRTactiveThread = -1;
+			private boolean sorted = false;
 
 
 			public MyScheduler(int y, MyThread[] tt, int numThreads)
@@ -148,25 +149,65 @@ public class MyScheduler extends Thread
 			public void shortestRemainingTime()
 			{
 					//get shortest time remaining threads
-					int shortestThread = activeThread;
-					for(int i =1; i< theseThreads.length; i++)
+					boolean allThreadsDone = true;
+					for(int i =0; i< theseThreads.length; i++)
 					{
-							if(((100 - theseThreads[i].barProgress)*theseThreads[i].delay) < ((100 - theseThreads[shortestThread].barProgress)*theseThreads[i].delay))
-								{
-									if(!theseThreads[i].hasStopped())
-										shortestThread=i;
-								}
+						if(!theseThreads[i].hasStopped())
+							allThreadsDone = false;
 					}
 
-					System.out.println(shortestThread);
-					startAllThreads();
-					activeThread = shortestThread;
-					actvateThread(activeThread);
+					if(allThreadsDone)
+					{
+						isDone = true;
+						return;
+					}
+
+					int[] shortestThread = new int[theseThreads.length];
+					int nextThread=0;
+
+					for(int i =0; i< theseThreads.length; i++)
+					{
+						if(!theseThreads[i].hasStopped())
+						{
+							shortestThread[i] = (100 - theseThreads[i].barProgress)*theseThreads[i].delay;
+						}
+						else
+						{
+							shortestThread[i] = -1;
+						}
+					}
+
+					int smallest=0;
+
+					for(int i =0; i< theseThreads.length; i++)
+					{
+						if(shortestThread[i]!=-1)
+							{
+								smallest = i;
+								i = theseThreads.length +1;
+							}
+					}
+
+					for(int i =0; i< theseThreads.length; i++)
+					{
+						if(shortestThread[smallest]>shortestThread[i] && shortestThread[i]!=-1)
+							smallest =i;
+					}
+
+					if(SRTactiveThread != smallest)
+					{
+						if(SRTactiveThread != -1)
+							theseThreads[SRTactiveThread].suspend();
+						SRTactiveThread = smallest;
+						theseThreads[SRTactiveThread].start();
+					}
+
 					try
-          {
-            Thread.sleep(30);
-          }
-          catch(Exception e){}
+					{
+						Thread.sleep(40);
+					}
+					catch(Exception e){}
+
 			}
 
 
@@ -191,16 +232,7 @@ public class MyScheduler extends Thread
 				}
 			}
 
-			public void actvateThread(int x)
-			{
-				for(int i =1; i< theseThreads.length; i++)
-				{
-					theseThreads[i].stopThread();
-				}
 
-				theseThreads[x].resumeThread();
-
-			}
 
 			public void startAllThreads()
 			{

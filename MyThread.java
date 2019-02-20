@@ -74,20 +74,12 @@ class MyThread extends Thread implements Comparable<MyThread>
     return panel1;
   }
 
-  public void stopThread()
-  {
-    stopped = true;
-  }
 
   public boolean hasStopped()
   {
     return stopped;
   }
 
-  public void resumeThread()
-  {
-      stopped = false;
-  }
 
 
   public void run()
