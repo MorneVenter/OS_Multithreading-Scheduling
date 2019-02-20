@@ -6,16 +6,24 @@ import java.awt.event.*;
 import java.util.*;
 
 
-class MyThread extends Thread
+class MyThread extends Thread implements Comparable<MyThread>
 {
   private boolean stopped = false;
-  private int delay;
+  public int delay;
   private JPanel panel1;
   private JProgressBar bar1;
 	private JSlider slider1;
   private int myNumber;
   private Color myBarColor;
   private JLabel caption1;
+  public int barProgress=0;
+
+  @Override
+  public int compareTo(MyThread o)
+  {
+      return this.delay - o.delay;
+  }
+
 
   public MyThread(int myNum, Color myCol)
   {
@@ -92,6 +100,7 @@ class MyThread extends Thread
 
 
           bar1.setValue(count);
+          barProgress = count;
           bar1.setString(count+"%");
           count++;
           caption1.setForeground(Color.red);

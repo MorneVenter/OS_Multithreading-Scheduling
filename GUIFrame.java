@@ -23,7 +23,7 @@ public class GUIFrame extends JFrame
 
 		startNext = false;
 
-		listOfThreads = new MyThread[maxThreads];	//initialize array, max 8 threads
+		listOfThreads = new MyThread[totalThreads];	//initialize array, max 8 threads
 
 		setTitle("Threading");
 		setSize(x,y);
@@ -42,7 +42,7 @@ public class GUIFrame extends JFrame
     public void actionPerformed(ActionEvent e) {
         startThreading();
     } });
-		threatButton.setText("Start Threading");
+		threatButton.setText("Start Threading / Reset");
 		threatButton.setBackground(Color.white);
 		threatButton.setPreferredSize(new Dimension(250,40));
 
@@ -107,7 +107,9 @@ public class MyScheduler extends Thread
 			private int activeThread=0;
 			private int totalThreads;
 			private boolean isDone = false;
-			private int x;
+			private int x; 										//selected choice
+			private boolean sorted = false;
+			private boolean hasStartedAll = false;
 
 
 			public MyScheduler(int y, MyThread[] tt, int numThreads)
@@ -133,8 +135,44 @@ public class MyScheduler extends Thread
 				}
 			}
 
+
+			public void shortestJobFirst()
+			{
+				if(!sorted)
+					Arrays.sort(theseThreads);
+
+				firstComefirstServe();
+			}
+
+
+			public void shortestRemainingTime()
+			{
+					//get shortest time remaining threads
+					int shortestThread = activeThread;
+					for(int i =1; i< theseThreads.length; i++)
+					{
+							if(((100 - theseThreads[i].barProgress)*theseThreads[i].delay) < ((100 - theseThreads[shortestThread].barProgress)*theseThreads[i].delay))
+								{
+									if(!theseThreads[i].hasStopped())
+										shortestThread=i;
+								}
+					}
+
+					System.out.println(shortestThread);
+					startAllThreads();
+					activeThread = shortestThread;
+					actvateThread(activeThread);
+					try
+          {
+            Thread.sleep(30);
+          }
+          catch(Exception e){}
+			}
+
+
 			public void run()
 			{
+
 				while(!isDone)
 				{
 					try
@@ -144,11 +182,38 @@ public class MyScheduler extends Thread
           catch(Exception e){}
 
 					if(x==0)
-					firstComefirstServe();
-
+						firstComefirstServe();
+					else if(x==1)
+						shortestJobFirst();
+					else if(x==2)
+						shortestRemainingTime();
 
 				}
 			}
+
+			public void actvateThread(int x)
+			{
+				for(int i =1; i< theseThreads.length; i++)
+				{
+					theseThreads[i].stopThread();
+				}
+
+				theseThreads[x].resumeThread();
+
+			}
+
+			public void startAllThreads()
+			{
+				if(!hasStartedAll)
+				{
+					for(int i =1; i< theseThreads.length; i++)
+					{
+						theseThreads[i].start();
+						hasStartedAll = true;
+					}
+				}
+			}
+
 }
 
 
