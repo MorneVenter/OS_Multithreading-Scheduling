@@ -10,7 +10,7 @@ import java.util.List;
 
 public class GUIFrame extends JFrame
 {
-
+	private MyScheduler s1;
 	private JButton threatButton;
 	private JButton addThreadButton;
 	private List<MyThread> listOfThreads;
@@ -109,7 +109,7 @@ public class GUIFrame extends JFrame
 		}
 
 		startNext = true;
-		MyScheduler s1 = new MyScheduler(selectScheduler.getSelectedIndex(), listOfThreads, totalThreads);
+		s1 = new MyScheduler(selectScheduler.getSelectedIndex(), listOfThreads, totalThreads);
 		s1.start();
 
 	}
@@ -126,13 +126,22 @@ public class GUIFrame extends JFrame
 			container.add(listOfThreads.get(totalThreads).getGUI());
 			container.revalidate();
 			container.repaint();
-
+			listOfThreads.get(totalThreads).setDelay();
+			
 			totalThreads++;
 
 			if(totalThreads>=maxThreads)
 			{
 				addThreadButton.setEnabled(false);
 			}
+
+			if(s1!=null)
+			{
+				s1.setTotalThreads(totalThreads);
+			}
+
+
+
 	}
 
 
@@ -162,6 +171,11 @@ public class MyScheduler extends Thread
 
 			}
 
+			public void setTotalThreads(int x)
+			{
+				totalThreads = x;
+			}
+
 			public void firstComefirstServe()
 			{
 				if(!theseThreads.get(activeThread).hasStopped())
@@ -171,9 +185,9 @@ public class MyScheduler extends Thread
 				}
 				else
 				{
-					activeThread++;
-					if(activeThread>totalThreads-1)
-						isDone=true;
+					if(activeThread<totalThreads-1)
+						activeThread++;
+
 				}
 			}
 
