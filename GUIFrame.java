@@ -155,7 +155,7 @@ public class MyScheduler extends Thread
 			private int x; 										//selected choice
 			private int SRTactiveThread = -1;
 			private int QUANTUM = 50;
-
+			private int[] queues = {25,50,75,100}; 
 
 			public MyScheduler(int y, List<MyThread> tt, int numThreads)
 			{
@@ -288,6 +288,44 @@ public class MyScheduler extends Thread
 			}
 
 
+			public void MultipleQueue()
+			{
+
+				if(theseThreads.get(activeThread).hasStopped())
+					{
+						activeThread++;
+						if(activeThread>=theseThreads.size())
+							activeThread = 0;
+
+						return;
+					}
+
+				if(theseThreads.get(activeThread).isAlive())
+					theseThreads.get(activeThread).resume();
+				else
+					theseThreads.get(activeThread).start();
+
+				try
+				{
+					Thread.sleep(QUANTUM);
+				}
+				catch(Exception e){}
+
+				theseThreads.get(activeThread).suspend();
+				activeThread++;
+
+				if(activeThread>=theseThreads.size())
+					activeThread = 0;
+
+			}
+
+
+			public void priority()
+			{
+
+			}
+
+
 			public void run()
 			{
 				while(true)
@@ -306,6 +344,10 @@ public class MyScheduler extends Thread
 						shortestRemainingTime();
 					else if(x==3)
 						RoundRobin();
+					else if(x==4)
+						priority();
+					else if(x==5)
+						MultipleQueue();
 				}
 			}
 
