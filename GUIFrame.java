@@ -155,7 +155,8 @@ public class MyScheduler extends Thread
 			private int x; 										//selected choice
 			private int SRTactiveThread = -1;
 			private int QUANTUM = 50;
-			private int[] queues = {25,50,75,100}; 
+			private int[] queues = {25,75,150,500};
+			private int[] queueMap;
 
 			public MyScheduler(int y, List<MyThread> tt, int numThreads)
 			{
@@ -291,6 +292,12 @@ public class MyScheduler extends Thread
 			public void MultipleQueue()
 			{
 
+				for(int i=0; i<theseThreads.size(); i++)
+				{
+					if(queueMap[i]<0)
+						queueMap[i]=0;
+				}
+
 				if(theseThreads.get(activeThread).hasStopped())
 					{
 						activeThread++;
@@ -307,7 +314,7 @@ public class MyScheduler extends Thread
 
 				try
 				{
-					Thread.sleep(QUANTUM);
+					Thread.sleep(getQueue(activeThread));
 				}
 				catch(Exception e){}
 
@@ -317,6 +324,18 @@ public class MyScheduler extends Thread
 				if(activeThread>=theseThreads.size())
 					activeThread = 0;
 
+
+
+			}
+
+			private int getQueue(int x)
+			{
+				queueMap[x]+=1;
+				if(queueMap[x]>queues.length)
+					queueMap[x]=0;
+
+				System.out.println("Thread " +x+": "+queues[queueMap[activeThread]] + "ms of CPU time.");
+				return queues[queueMap[activeThread]];
 			}
 
 
@@ -328,6 +347,20 @@ public class MyScheduler extends Thread
 
 			public void run()
 			{
+				if(x==5)
+				{
+					queueMap = new int[8];
+					for(int i=0; i<theseThreads.size(); i++)
+					{
+						queueMap[i]=0;
+					}
+					for(int i = theseThreads.size(); i<queueMap.length; i++)
+					{
+						queueMap[i] = -1;
+					}
+
+				}
+
 				while(true)
 				{
 					try
