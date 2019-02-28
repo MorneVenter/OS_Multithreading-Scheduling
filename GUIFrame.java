@@ -207,7 +207,7 @@ public class MyScheduler extends Thread
 					{
 					  if(!theseThreads.get(i).hasStopped())
 					  {
-					    shortestThread[i] = ((400 - theseThreads.get(i).barProgress)/theseThreads.get(i).delay);
+					    shortestThread[i] = ((2500 - theseThreads.get(i).barProgress)/theseThreads.get(i).delay);
 					  }
 					  else
 					  {
@@ -258,7 +258,7 @@ public class MyScheduler extends Thread
 
 			public void RoundRobin()
 			{
-				System.out.println(activeThread);
+
 				if(theseThreads.get(activeThread).hasStopped())
 					{
 						activeThread++;

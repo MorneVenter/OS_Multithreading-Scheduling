@@ -44,7 +44,7 @@ class MyThread extends Thread implements Comparable<MyThread>
   {
     bar1 = new JProgressBar();
 		bar1.setMinimum(0);
-		bar1.setMaximum(400);
+		bar1.setMaximum(2500);
 		bar1.setPreferredSize( new Dimension (200,35));
 		bar1.setStringPainted(true);
 		bar1.setForeground(myBarColor);
@@ -61,7 +61,7 @@ class MyThread extends Thread implements Comparable<MyThread>
 
 		caption1 = new JLabel("Thread "+myNumber+":");
 		caption1.setForeground(Color.white);
-		slider1 = new JSlider(JSlider.HORIZONTAL,1, 10, 2);
+		slider1 = new JSlider(JSlider.HORIZONTAL,1, 10, 5);
 		slider1.setMajorTickSpacing(2);
 		slider1.setMinorTickSpacing(1);
 		slider1.setPaintTicks(true);
@@ -102,7 +102,7 @@ class MyThread extends Thread implements Comparable<MyThread>
 
         bar1.setValue(bar1.getValue()+(delay));
         barProgress = bar1.getValue();
-        bar1.setString((bar1.getValue()/4)+"%");
+        bar1.setString((bar1.getValue()/25)+"%");
         caption1.setForeground(Color.red);
 
         try
@@ -111,7 +111,7 @@ class MyThread extends Thread implements Comparable<MyThread>
         }
         catch(Exception e){}
 
-        if(bar1.getValue()>=400)
+        if(bar1.getValue()>=2500)
         {
           bar1.setString("DONE!");
           stopped =true;
