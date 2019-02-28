@@ -4,7 +4,8 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.util.*;
-
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 class MyThread extends Thread implements Comparable<MyThread>
 {
@@ -17,6 +18,7 @@ class MyThread extends Thread implements Comparable<MyThread>
   private Color myBarColor;
   private JLabel caption1;
   public int barProgress=0;
+
 
   @Override
   public int compareTo(MyThread o)
@@ -42,17 +44,26 @@ class MyThread extends Thread implements Comparable<MyThread>
   {
     bar1 = new JProgressBar();
 		bar1.setMinimum(0);
-		bar1.setMaximum(100);
+		bar1.setMaximum(400);
 		bar1.setPreferredSize( new Dimension (200,35));
 		bar1.setStringPainted(true);
 		bar1.setForeground(myBarColor);
 		bar1.setString("0%");
 
+    bar1.addChangeListener(new ChangeListener()
+    {
+      public void stateChanged(ChangeEvent evt)
+      {
+        setDelay();
+      }
+    });
+
+
 		caption1 = new JLabel("Thread "+myNumber+":");
 		caption1.setForeground(Color.white);
-		slider1 = new JSlider(JSlider.HORIZONTAL,1, 500, 5);
-		slider1.setMajorTickSpacing(150);
-		slider1.setMinorTickSpacing(50);
+		slider1 = new JSlider(JSlider.HORIZONTAL,1, 10, 2);
+		slider1.setMajorTickSpacing(2);
+		slider1.setMinorTickSpacing(1);
 		slider1.setPaintTicks(true);
 
 		panel1 = new JPanel();
@@ -82,34 +93,32 @@ class MyThread extends Thread implements Comparable<MyThread>
 
 
 
+
+
   public void run()
   {
     while(!stopped)
     {
-        int count = 1;
-        while(count<=100 && !stopped)
+
+        bar1.setValue(bar1.getValue()+(delay));
+        barProgress = bar1.getValue();
+        bar1.setString((bar1.getValue()/4)+"%");
+        caption1.setForeground(Color.red);
+
+        try
         {
-
-
-          bar1.setValue(count);
-          barProgress = count;
-          bar1.setString(count+"%");
-          count++;
-          caption1.setForeground(Color.red);
-          try
-          {
-            Thread.sleep(delay);
-          }
-          catch(Exception e){}
-
-          if(count>=100)
-          {
-            bar1.setString("DONE!");
-            stopped =true;
-          }
-
-          caption1.setForeground(Color.white);
+          Thread.sleep(5);
         }
+        catch(Exception e){}
+
+        if(bar1.getValue()>=400)
+        {
+          bar1.setString("DONE!");
+          stopped =true;
+        }
+
+        caption1.setForeground(Color.white);
+
     }
   }
 

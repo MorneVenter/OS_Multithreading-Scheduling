@@ -127,7 +127,7 @@ public class GUIFrame extends JFrame
 			container.revalidate();
 			container.repaint();
 			listOfThreads.get(totalThreads).setDelay();
-			
+
 			totalThreads++;
 
 			if(totalThreads>=maxThreads)
@@ -147,20 +147,14 @@ public class GUIFrame extends JFrame
 
 
 
-
-
-
-
 public class MyScheduler extends Thread
 {
 			private List<MyThread> theseThreads;
 			private int activeThread=0;
 			private int totalThreads;
-			private boolean isDone = false;
 			private int x; 										//selected choice
-			private boolean hasStartedAll = false;
 			private int SRTactiveThread = -1;
-			private boolean sorted = false;
+			private int QUANTUM = 50;
 
 
 			public MyScheduler(int y, List<MyThread> tt, int numThreads)
@@ -192,14 +186,6 @@ public class MyScheduler extends Thread
 			}
 
 
-			public void shortestJobFirst()
-			{
-				if(!sorted)
-					Collections.sort(theseThreads);
-
-				firstComefirstServe();
-			}
-
 
 			public void shortestRemainingTime()
 			{
@@ -213,48 +199,53 @@ public class MyScheduler extends Thread
 
 					if(allThreadsDone)
 					{
-						isDone = true;
 						return;
 					}
 
 					int[] shortestThread = new int[theseThreads.size()];
-					int nextThread=0;
-
 					for(int i =0; i< theseThreads.size(); i++)
 					{
-						if(!theseThreads.get(i).hasStopped())
-						{
-							shortestThread[i] = (100 - theseThreads.get(i).barProgress)*theseThreads.get(i).delay;
-						}
-						else
-						{
-							shortestThread[i] = -1;
-						}
+					  if(!theseThreads.get(i).hasStopped())
+					  {
+					    shortestThread[i] = ((400 - theseThreads.get(i).barProgress)/theseThreads.get(i).delay);
+					  }
+					  else
+					  {
+					    shortestThread[i] = -1;
+					  }
 					}
 
 					int smallest=0;
 
 					for(int i =0; i< theseThreads.size(); i++)
 					{
-						if(shortestThread[i]!=-1)
-							{
-								smallest = i;
-								i = theseThreads.size() +1;
-							}
+					  if(shortestThread[i]!=-1)
+					    smallest = i;
 					}
+
+					if(theseThreads.get(smallest).hasStopped())
+					  return;
+
 
 					for(int i =0; i< theseThreads.size(); i++)
 					{
-						if(shortestThread[smallest]>shortestThread[i] && shortestThread[i]!=-1)
-							smallest =i;
+					  if(shortestThread[i]!=-1)
+					  {
+					    if(shortestThread[smallest]>shortestThread[i] && !theseThreads.get(i).hasStopped())
+					      smallest=i;
+					  }
 					}
+
 
 					if(SRTactiveThread != smallest)
 					{
 						if(SRTactiveThread != -1)
 							theseThreads.get(SRTactiveThread).suspend();
 						SRTactiveThread = smallest;
-						theseThreads.get(SRTactiveThread).start();
+						if(theseThreads.get(SRTactiveThread).isAlive())
+							theseThreads.get(SRTactiveThread).resume();
+						else
+							theseThreads.get(SRTactiveThread).start();
 					}
 
 					try
@@ -265,45 +256,61 @@ public class MyScheduler extends Thread
 
 			}
 
+			public void RoundRobin()
+			{
+				System.out.println(activeThread);
+				if(theseThreads.get(activeThread).hasStopped())
+					{
+						activeThread++;
+						if(activeThread>=theseThreads.size())
+							activeThread = 0;
+
+						return;
+					}
+
+				if(theseThreads.get(activeThread).isAlive())
+					theseThreads.get(activeThread).resume();
+				else
+					theseThreads.get(activeThread).start();
+
+				try
+				{
+					Thread.sleep(QUANTUM);
+				}
+				catch(Exception e){}
+
+				theseThreads.get(activeThread).suspend();
+				activeThread++;
+
+				if(activeThread>=theseThreads.size())
+					activeThread = 0;
+
+			}
+
 
 			public void run()
 			{
-
-				while(!isDone)
+				while(true)
 				{
 					try
-          {
-            Thread.sleep(15);
-          }
-          catch(Exception e){}
+	        {
+	          Thread.sleep(15);
+	        }
+	        catch(Exception e){}
 
 					if(x==0)
 						firstComefirstServe();
 					else if(x==1)
-						shortestJobFirst();
+						shortestRemainingTime();
 					else if(x==2)
 						shortestRemainingTime();
-
+					else if(x==3)
+						RoundRobin();
 				}
 			}
 
-
-
-			public void startAllThreads()
-			{
-				if(!hasStartedAll)
-				{
-					for(int i =1; i< theseThreads.size(); i++)
-					{
-						theseThreads.get(i).start();
-						hasStartedAll = true;
-					}
-				}
-			}
 
 }
-
-
 
 
 }
