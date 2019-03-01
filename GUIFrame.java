@@ -368,8 +368,7 @@ public class MyScheduler extends Thread
 				if(theseThreads.get(highestPrio).hasStopped())
 					return;
 
-				System.out.println("Hi Pro: " + highestPrio);
-
+		
 				if(activeThread != highestPrio)
 				{
 					//if(activeThread != -1)
