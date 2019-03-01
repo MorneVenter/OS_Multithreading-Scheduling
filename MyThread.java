@@ -7,24 +7,18 @@ import java.util.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-class MyThread extends Thread implements Comparable<MyThread>
+class MyThread extends Thread
 {
   private boolean stopped = false;
   public int delay;
   private JPanel panel1;
   private JProgressBar bar1;
 	private JSlider slider1;
-  private int myNumber;
+  public int myNumber;
   private Color myBarColor;
   private JLabel caption1;
   public int barProgress=0;
 
-
-  @Override
-  public int compareTo(MyThread o)
-  {
-      return this.delay - o.delay;
-  }
 
 
   public MyThread(int myNum, Color myCol)
@@ -34,6 +28,7 @@ class MyThread extends Thread implements Comparable<MyThread>
     generateGUI();
 
   }
+
 
   public void setDelay()
   {

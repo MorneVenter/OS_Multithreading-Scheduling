@@ -333,11 +333,6 @@ public class MyScheduler extends Thread
 					if(theseThreads.get(activeThread).hasStopped())
 						x=tempQuant+1;
 				}
-				// try
-				// {
-				// 	Thread.sleep(getQueue(activeThread));
-				// }
-				// catch(Exception e){}
 
 				theseThreads.get(activeThread).suspend();
 				activeThread++;
@@ -362,6 +357,29 @@ public class MyScheduler extends Thread
 
 			public void priority()
 			{
+				int highestPrio=0;
+
+				for(int i=0; i<theseThreads.size(); i++)
+				{
+						if(theseThreads.get(highestPrio).myNumber < theseThreads.get(i).myNumber && !theseThreads.get(i).hasStopped())
+							highestPrio = i;
+				}
+
+				if(theseThreads.get(highestPrio).hasStopped())
+					return;
+
+				System.out.println("Hi Pro: " + highestPrio);
+
+				if(activeThread != highestPrio)
+				{
+					//if(activeThread != -1)
+					theseThreads.get(activeThread).suspend();
+					activeThread = highestPrio;
+					if(theseThreads.get(activeThread).isAlive())
+						theseThreads.get(activeThread).resume();
+					else
+						theseThreads.get(activeThread).start();
+				}
 
 			}
 
