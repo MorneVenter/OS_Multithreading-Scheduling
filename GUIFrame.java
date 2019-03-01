@@ -58,6 +58,8 @@ public class GUIFrame extends JFrame
 		addThreadButton.setText("Add Thread");
 		addThreadButton.setBackground(Color.white);
 		addThreadButton.setPreferredSize(new Dimension(250,40));
+		if(totalThreads>=maxThreads)
+			addThreadButton.setEnabled(false);
 
 		container = new JPanel();
 		container.setBackground(Color.darkGray);
@@ -154,7 +156,7 @@ public class MyScheduler extends Thread
 			private int totalThreads;
 			private int x; 										//selected choice
 			private int SRTactiveThread = -1;
-			private int QUANTUM = 50;
+			private int QUANTUM = 125;
 			private int[] queues = {25,75,150,500};
 			private int[] queueMap;
 
@@ -274,11 +276,18 @@ public class MyScheduler extends Thread
 				else
 					theseThreads.get(activeThread).start();
 
-				try
+				for (int x=0; x<QUANTUM; x++ )
 				{
-					Thread.sleep(QUANTUM);
+					try
+					{
+						Thread.sleep(1);
+					}
+					catch(Exception e){}
+
+					if(theseThreads.get(activeThread).hasStopped())
+						x=QUANTUM+1;
 				}
-				catch(Exception e){}
+
 
 				theseThreads.get(activeThread).suspend();
 				activeThread++;
@@ -312,11 +321,23 @@ public class MyScheduler extends Thread
 				else
 					theseThreads.get(activeThread).start();
 
-				try
+				int tempQuant = getQueue(activeThread);
+				for (int x=0; x<tempQuant; x++ )
 				{
-					Thread.sleep(getQueue(activeThread));
+					try
+					{
+						Thread.sleep(1);
+					}
+					catch(Exception e){}
+
+					if(theseThreads.get(activeThread).hasStopped())
+						x=tempQuant+1;
 				}
-				catch(Exception e){}
+				// try
+				// {
+				// 	Thread.sleep(getQueue(activeThread));
+				// }
+				// catch(Exception e){}
 
 				theseThreads.get(activeThread).suspend();
 				activeThread++;
@@ -331,7 +352,7 @@ public class MyScheduler extends Thread
 			private int getQueue(int x)
 			{
 				queueMap[x]+=1;
-				if(queueMap[x]>queues.length)
+				if(queueMap[x]>=queues.length)
 					queueMap[x]=0;
 
 				System.out.println("Thread " +x+": "+queues[queueMap[activeThread]] + "ms of CPU time.");
