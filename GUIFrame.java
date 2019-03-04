@@ -18,6 +18,7 @@ public class GUIFrame extends JFrame
 	private int maxThreads = 8, totalThreads;
 	private boolean startNext;
 	private JComboBox selectScheduler;
+	private JSlider defSlider;
 
 	public GUIFrame(int x, int y, int threads)
 	{
@@ -35,6 +36,10 @@ public class GUIFrame extends JFrame
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLayout(new FlowLayout());
 
+		defSlider = new JSlider(JSlider.HORIZONTAL,1, 10, 5);
+		defSlider.setMajorTickSpacing(2);
+		defSlider.setMinorTickSpacing(1);
+		defSlider.setPaintTicks(true);
 
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
@@ -71,7 +76,7 @@ public class GUIFrame extends JFrame
 				int g = rand.nextInt(255);
 				int b = rand.nextInt(255);
 				Color randomColor = new Color(r, g, b);
-				listOfThreads.add(new MyThread(i+1, randomColor));
+				listOfThreads.add(new MyThread(i+1, randomColor, 5));
 				container.add(listOfThreads.get(i).getGUI());
 		}
 
@@ -90,6 +95,7 @@ public class GUIFrame extends JFrame
 		add(container);
 		add(threatButton);
 		add(addThreadButton);
+		add(defSlider);
 
 		setVisible(true);
 	}
@@ -103,6 +109,7 @@ public class GUIFrame extends JFrame
 			g1.setVisible(true);
 			this.dispose();
 			System.out.println("#############################################");
+			s1.suspend();
 			return;
 		}
 
@@ -125,7 +132,7 @@ public class GUIFrame extends JFrame
 			int g = rand.nextInt(255);
 			int b = rand.nextInt(255);
 			Color randomColor = new Color(r, g, b);
-			listOfThreads.add(new MyThread(totalThreads+1, randomColor));
+			listOfThreads.add(new MyThread(totalThreads+1, randomColor, defSlider.getValue()));
 			container.add(listOfThreads.get(totalThreads).getGUI());
 			container.revalidate();
 			container.repaint();

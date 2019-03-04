@@ -21,11 +21,11 @@ class MyThread extends Thread
 
 
 
-  public MyThread(int myNum, Color myCol)
+  public MyThread(int myNum, Color myCol, int defV)
   {
     myNumber = myNum;
     myBarColor = myCol;
-    generateGUI();
+    generateGUI(defV);
 
   }
 
@@ -35,7 +35,7 @@ class MyThread extends Thread
     delay = slider1.getValue();
   }
 
-  public void generateGUI()
+  public void generateGUI(int defValue)
   {
     bar1 = new JProgressBar();
 		bar1.setMinimum(0);
@@ -56,7 +56,7 @@ class MyThread extends Thread
 
 		caption1 = new JLabel("Thread "+myNumber+":");
 		caption1.setForeground(Color.white);
-		slider1 = new JSlider(JSlider.HORIZONTAL,1, 10, 5);
+		slider1 = new JSlider(JSlider.HORIZONTAL,1, 10, defValue);
 		slider1.setMajorTickSpacing(2);
 		slider1.setMinorTickSpacing(1);
 		slider1.setPaintTicks(true);
