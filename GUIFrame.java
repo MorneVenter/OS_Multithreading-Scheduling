@@ -102,6 +102,7 @@ public class GUIFrame extends JFrame
 			GUIFrame g1 = new GUIFrame(650,650,2);
 			g1.setVisible(true);
 			this.dispose();
+			System.out.println("#############################################");
 			return;
 		}
 
@@ -131,6 +132,8 @@ public class GUIFrame extends JFrame
 			listOfThreads.get(totalThreads).setDelay();
 
 			totalThreads++;
+
+			System.out.println("Thread " +totalThreads+" added.");
 
 			if(totalThreads>=maxThreads)
 			{
@@ -178,7 +181,11 @@ public class MyScheduler extends Thread
 				if(!theseThreads.get(activeThread).hasStopped())
 				{
 					if(!theseThreads.get(activeThread).isAlive())
+					{
+							System.out.println("Thread "+(activeThread)+" stopped.");
 							theseThreads.get(activeThread).start();
+							System.out.println("Thread "+(activeThread+1)+" started.");
+					}
 				}
 				else
 				{
@@ -243,12 +250,21 @@ public class MyScheduler extends Thread
 					if(SRTactiveThread != smallest)
 					{
 						if(SRTactiveThread != -1)
-							theseThreads.get(SRTactiveThread).suspend();
+							{
+								theseThreads.get(SRTactiveThread).suspend();
+								System.out.println("Thread "+(SRTactiveThread+1)+" stopped.");
+							}
 						SRTactiveThread = smallest;
 						if(theseThreads.get(SRTactiveThread).isAlive())
+						{
 							theseThreads.get(SRTactiveThread).resume();
+							System.out.println("Thread "+(SRTactiveThread+1)+" started.");
+						}
 						else
+						{
 							theseThreads.get(SRTactiveThread).start();
+							System.out.println("Thread "+(SRTactiveThread+1)+" started.");
+						}
 					}
 
 					try
@@ -272,9 +288,15 @@ public class MyScheduler extends Thread
 					}
 
 				if(theseThreads.get(activeThread).isAlive())
-					theseThreads.get(activeThread).resume();
+					{
+						theseThreads.get(activeThread).resume();
+						System.out.println("Thread "+(activeThread+1)+" started.");
+					}
 				else
+				{
 					theseThreads.get(activeThread).start();
+					System.out.println("Thread "+(activeThread+1)+" started.");
+				}
 
 				for (int x=0; x<QUANTUM; x++ )
 				{
@@ -290,6 +312,7 @@ public class MyScheduler extends Thread
 
 
 				theseThreads.get(activeThread).suspend();
+				System.out.println("Thread "+(activeThread+1)+" stopped.");
 				activeThread++;
 
 				if(activeThread>=theseThreads.size())
@@ -317,11 +340,19 @@ public class MyScheduler extends Thread
 					}
 
 				if(theseThreads.get(activeThread).isAlive())
-					theseThreads.get(activeThread).resume();
+					{
+						theseThreads.get(activeThread).resume();
+						System.out.println("Thread "+(activeThread+1)+" started.");
+					}
 				else
+				{
 					theseThreads.get(activeThread).start();
+					System.out.println("Thread "+(activeThread+1)+" started.");
+				}
+
 
 				int tempQuant = getQueue(activeThread);
+				int qUsed=tempQuant;
 				for (int x=0; x<tempQuant; x++ )
 				{
 					try
@@ -331,12 +362,18 @@ public class MyScheduler extends Thread
 					catch(Exception e){}
 
 					if(theseThreads.get(activeThread).hasStopped())
+					{
+						qUsed=x;
 						x=tempQuant+1;
+					}
 				}
 
-				theseThreads.get(activeThread).suspend();
-				activeThread++;
+				System.out.println("Thread "+(activeThread+1)+" used "+qUsed+"ms of CPU time.");
 
+				theseThreads.get(activeThread).suspend();
+				System.out.println("Thread "+(activeThread+1)+" stopped.");
+				activeThread++;
+				System.out.println("------------------------------------");
 				if(activeThread>=theseThreads.size())
 					activeThread = 0;
 
@@ -350,7 +387,7 @@ public class MyScheduler extends Thread
 				if(queueMap[x]>=queues.length)
 					queueMap[x]=0;
 
-				System.out.println("Thread " +x+": "+queues[queueMap[activeThread]] + "ms of CPU time.");
+				System.out.println("Thread " +(x+1)+" allocated "+queues[queueMap[activeThread]] + "ms of CPU time.");
 				return queues[queueMap[activeThread]];
 			}
 
@@ -368,16 +405,17 @@ public class MyScheduler extends Thread
 				if(theseThreads.get(highestPrio).hasStopped())
 					return;
 
-		
+
 				if(activeThread != highestPrio)
 				{
-					//if(activeThread != -1)
 					theseThreads.get(activeThread).suspend();
+					System.out.println("Thread "+(activeThread+1)+" stopped.");
 					activeThread = highestPrio;
 					if(theseThreads.get(activeThread).isAlive())
 						theseThreads.get(activeThread).resume();
 					else
 						theseThreads.get(activeThread).start();
+					System.out.println("Thread "+(activeThread+1)+" started with priority " +activeThread);
 				}
 
 			}
