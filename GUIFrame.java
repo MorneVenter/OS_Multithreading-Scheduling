@@ -19,6 +19,7 @@ public class GUIFrame extends JFrame
 	private boolean startNext;
 	private JComboBox selectScheduler;
 	private JSlider defSlider;
+	private JSlider priorSlider;
 
 	public GUIFrame(int x, int y, int threads)
 	{
@@ -36,7 +37,12 @@ public class GUIFrame extends JFrame
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLayout(new FlowLayout());
 
-		defSlider = new JSlider(JSlider.HORIZONTAL,1, 10, 5);
+		priorSlider = new JSlider(JSlider.HORIZONTAL,2, 10, 5);
+		priorSlider.setMajorTickSpacing(2);
+		priorSlider.setMinorTickSpacing(1);
+		priorSlider.setPaintTicks(true);
+
+		defSlider = new JSlider(JSlider.HORIZONTAL,1, 8, 5);
 		defSlider.setMajorTickSpacing(2);
 		defSlider.setMinorTickSpacing(1);
 		defSlider.setPaintTicks(true);
@@ -76,7 +82,7 @@ public class GUIFrame extends JFrame
 				int g = rand.nextInt(255);
 				int b = rand.nextInt(255);
 				Color randomColor = new Color(r, g, b);
-				listOfThreads.add(new MyThread(i+1, randomColor, 5));
+				listOfThreads.add(new MyThread(i+1, randomColor, 5, (i+1)));
 				container.add(listOfThreads.get(i).getGUI());
 		}
 
@@ -91,12 +97,21 @@ public class GUIFrame extends JFrame
 		selectionPanel.add(selectScheduler);
 
 
+		JLabel l1 = new JLabel("Priority:");
+		JLabel l2 = new JLabel("Cycles:");
+		JPanel controlos = new JPanel();
+		controlos.setPreferredSize(new Dimension(500,75));
+		controlos.setLayout(new GridLayout(2,2,2,2));
+
 		add(selectionPanel);
 		add(container);
 		add(threatButton);
 		add(addThreadButton);
-		add(defSlider);
-
+		controlos.add(l2);
+		controlos.add(defSlider);
+		controlos.add(l1);
+		controlos.add(priorSlider);
+		add(controlos);
 		setVisible(true);
 	}
 
@@ -105,7 +120,7 @@ public class GUIFrame extends JFrame
 	{
 		if(startNext)
 		{
-			GUIFrame g1 = new GUIFrame(650,650,2);
+			GUIFrame g1 = new GUIFrame(650,725,2);
 			g1.setVisible(true);
 			this.dispose();
 			System.out.println("#############################################");
@@ -132,7 +147,7 @@ public class GUIFrame extends JFrame
 			int g = rand.nextInt(255);
 			int b = rand.nextInt(255);
 			Color randomColor = new Color(r, g, b);
-			listOfThreads.add(new MyThread(totalThreads+1, randomColor, defSlider.getValue()));
+			listOfThreads.add(new MyThread(totalThreads+1, randomColor, defSlider.getValue(), priorSlider.getValue()));
 			container.add(listOfThreads.get(totalThreads).getGUI());
 			container.revalidate();
 			container.repaint();
@@ -405,7 +420,7 @@ public class MyScheduler extends Thread
 
 				for(int i=0; i<theseThreads.size(); i++)
 				{
-						if(theseThreads.get(highestPrio).myNumber < theseThreads.get(i).myNumber && !theseThreads.get(i).hasStopped())
+						if((theseThreads.get(highestPrio).myPriority+theseThreads.get(highestPrio).getBarProgressValue()) < (theseThreads.get(i).myPriority+theseThreads.get(i).getBarProgressValue()) && !theseThreads.get(i).hasStopped())
 							highestPrio = i;
 				}
 
@@ -422,7 +437,7 @@ public class MyScheduler extends Thread
 						theseThreads.get(activeThread).resume();
 					else
 						theseThreads.get(activeThread).start();
-					System.out.println("Thread "+(activeThread+1)+" started with priority " +activeThread);
+					System.out.println("Thread "+(activeThread+1)+" started with priority " +theseThreads.get(activeThread).myPriority);
 				}
 
 			}

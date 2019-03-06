@@ -14,6 +14,7 @@ class MyThread extends Thread
   private JPanel panel1;
   private JProgressBar bar1;
 	private JSlider slider1;
+  public int myPriority;
   public int myNumber;
   private Color myBarColor;
   private JLabel caption1;
@@ -21,10 +22,11 @@ class MyThread extends Thread
 
 
 
-  public MyThread(int myNum, Color myCol, int defV)
+  public MyThread(int myNum, Color myCol, int defV, int prior)
   {
     myNumber = myNum;
     myBarColor = myCol;
+    myPriority = prior;
     generateGUI(defV);
 
   }
@@ -86,7 +88,10 @@ class MyThread extends Thread
     return stopped;
   }
 
-
+  public double getBarProgressValue()
+  {
+    return (bar1.getValue()/25.0)/100.0;
+  }
 
 
 

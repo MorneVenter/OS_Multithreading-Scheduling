@@ -28,7 +28,7 @@ public class driver
     }
 
 
-    GUIFrame thisFrame = new GUIFrame(650, 650, threads);
+    GUIFrame thisFrame = new GUIFrame(650, 725, threads);
 
   }
 
