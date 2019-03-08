@@ -176,14 +176,14 @@ public class GUIFrame extends JFrame
 
 public class MyScheduler extends Thread
 {
-			private List<MyThread> theseThreads;
-			private int activeThread=0;
-			private int totalThreads;
-			private int x; 										//selected choice
-			private int SRTactiveThread = -1;
-			private int QUANTUM = 125;
-			private int[] queues = {25,75,150,500};
-			private int[] queueMap;
+			private List<MyThread> theseThreads; //list of all threads
+			private int activeThread=0;	//index of current active thread
+			private int totalThreads; //total number of threads
+			private int x; 									//selected choice of scheduling algorithm
+			private int SRTactiveThread = -1; //active thread of the shortest remaining time
+			private int QUANTUM = 125;  //quantum in milliseconds
+			private int[] queues = {25,75,150,500}; //queue times for multiple queues
+			private int[] queueMap; //keeps track of which threads queue
 
 			public MyScheduler(int y, List<MyThread> tt, int numThreads)
 			{
@@ -312,12 +312,12 @@ public class MyScheduler extends Thread
 				if(theseThreads.get(activeThread).isAlive())
 					{
 						theseThreads.get(activeThread).resume();
-						System.out.println("Thread "+(activeThread+1)+" started.");
+						System.out.println("Thread "+(activeThread+1)+" started with quantum: "+QUANTUM+"ms");
 					}
 				else
 				{
 					theseThreads.get(activeThread).start();
-					System.out.println("Thread "+(activeThread+1)+" started.");
+					System.out.println("Thread "+(activeThread+1)+" started with quantum: "+QUANTUM+"ms");
 				}
 
 				for (int x=0; x<QUANTUM; x++ )
