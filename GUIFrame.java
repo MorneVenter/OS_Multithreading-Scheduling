@@ -182,6 +182,7 @@ public class MyScheduler extends Thread
 			private int x; 									//selected choice of scheduling algorithm
 			private int SRTactiveThread = -1; //active thread of the shortest remaining time
 			private int QUANTUM = 1000;  //quantum in milliseconds
+			private int robinQueue=0;
 			private int[] queues = {25,75,150,500}; //queue times for multiple queues
 			private int[] queueMap; //keeps track of which threads queue
 
@@ -300,21 +301,29 @@ public class MyScheduler extends Thread
 			public void RoundRobin()
 			{
 
-				boolean lastprio =true;
-				for (int i =0; i<theseThreads.size()-1; i++)
+				boolean initAllDone = false;
+				int oldActive=0;
+
+				if(robinQueue!=theseThreads.size())
 				{
-						if(theseThreads.get(i).isAlive())
-							lastprio=false;
-				}
+					initAllDone = true;
 
-				int dif=0;
+					for (int x= 0;x<robinQueue; x++)
+					{
+							if(!theseThreads.get(x).isAlive())
+								initAllDone = false;
+					}
 
-				if(lastprio && !theseThreads.get(theseThreads.size()-1).isAlive() && theseThreads.get(0).isAlive())
-				{
-					dif = (theseThreads.size()-1) - activeThread;
-					activeThread = theseThreads.size()-1;
-					System.out.println("BAzinga");
+					if(initAllDone)
+					{
+						oldActive = activeThread;
+						activeThread = robinQueue;
+						if(activeThread>=theseThreads.size())
+							activeThread = 0;
+					}
 
+					System.out.println("New thread takes priority over threads that have started.");
+					robinQueue++;
 				}
 
 				if(theseThreads.get(activeThread).hasStopped())
@@ -356,12 +365,13 @@ public class MyScheduler extends Thread
 
 				if(fullQ)
 					System.out.println("Thread "+(activeThread+1)+" used quantum: "+QUANTUM+"ms");
+
 				theseThreads.get(activeThread).suspend();
 				System.out.println("Thread "+(activeThread+1)+" stopped.");
 
 
-				if(lastprio)
-					activeThread = activeThread-dif;
+				if(initAllDone)
+					activeThread = oldActive;
 				else
 					activeThread++;
 
@@ -487,6 +497,8 @@ public class MyScheduler extends Thread
 					}
 
 				}
+
+				robinQueue = theseThreads.size();
 
 				while(true)
 				{
