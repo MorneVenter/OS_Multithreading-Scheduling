@@ -181,7 +181,7 @@ public class MyScheduler extends Thread
 			private int totalThreads; //total number of threads
 			private int x; 									//selected choice of scheduling algorithm
 			private int SRTactiveThread = -1; //active thread of the shortest remaining time
-			private int QUANTUM = 125;  //quantum in milliseconds
+			private int QUANTUM = 1000;  //quantum in milliseconds
 			private int[] queues = {25,75,150,500}; //queue times for multiple queues
 			private int[] queueMap; //keeps track of which threads queue
 
@@ -300,6 +300,23 @@ public class MyScheduler extends Thread
 			public void RoundRobin()
 			{
 
+				boolean lastprio =true;
+				for (int i =0; i<theseThreads.size()-1; i++)
+				{
+						if(theseThreads.get(i).isAlive())
+							lastprio=false;
+				}
+
+				int dif=0;
+
+				if(lastprio && !theseThreads.get(theseThreads.size()-1).isAlive() && theseThreads.get(0).isAlive())
+				{
+					dif = (theseThreads.size()-1) - activeThread;
+					activeThread = theseThreads.size()-1;
+					System.out.println("BAzinga");
+
+				}
+
 				if(theseThreads.get(activeThread).hasStopped())
 					{
 						activeThread++;
@@ -320,6 +337,7 @@ public class MyScheduler extends Thread
 					System.out.println("Thread "+(activeThread+1)+" started with quantum: "+QUANTUM+"ms");
 				}
 
+				boolean fullQ = true;
 				for (int x=0; x<QUANTUM; x++ )
 				{
 					try
@@ -329,16 +347,27 @@ public class MyScheduler extends Thread
 					catch(Exception e){}
 
 					if(theseThreads.get(activeThread).hasStopped())
+					{
+						System.out.println("Thread "+(activeThread+1)+" used quantum: "+x+"ms");
 						x=QUANTUM+1;
+						fullQ = false;
+					}
 				}
 
-
+				if(fullQ)
+					System.out.println("Thread "+(activeThread+1)+" used quantum: "+QUANTUM+"ms");
 				theseThreads.get(activeThread).suspend();
 				System.out.println("Thread "+(activeThread+1)+" stopped.");
-				activeThread++;
 
-				if(activeThread>=theseThreads.size())
+
+				if(lastprio)
+					activeThread = activeThread-dif;
+				else
+					activeThread++;
+
+				if(activeThread>=theseThreads.size() || activeThread < 0)
 					activeThread = 0;
+
 
 			}
 
